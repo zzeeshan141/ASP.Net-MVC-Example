@@ -1,0 +1,38 @@
+﻿@{
+    ViewBag.Title = "MovieList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h2>Movies</h2>
+<table id="movies" class="table table-bordered table-hover">
+    <thead>
+    <tr>
+        <th scope="col">Movie</th>
+        <th scope="col">Genre</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            $("#movies").DataTable({
+                ajax: {
+                    url: "/api/movies",
+                    // This is set to null because by default jquery data 
+                    // check for property "dataSource" in api response.
+                    // in out case we are directly returning movies.
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name"
+                    },
+                    {
+                        data: "genre.name"
+                    }
+                ]
+            });
+        });
+    </script>
+}

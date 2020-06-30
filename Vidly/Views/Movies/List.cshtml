@@ -1,0 +1,70 @@
+﻿
+@{
+    ViewBag.Title = "MovieList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Movies</h2>
+
+@Html.ActionLink("NEW MOVIE", "New", "Movies", new {@class= "btn btn-primary" })
+<br/><br />
+<table id="movies" class="table table-bordered table-hover">
+    <thead>
+    <tr>
+        <th scope="col">Movie</th>
+        <th scope="col">Genre</th>
+        <th scope="col">Delete</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section scripts {
+    <script>
+        $(document).ready(function() {
+            var table = $("#movies").DataTable({
+                ajax: {
+                    url: "/api/movies",
+                    // This is set to null because by default jquery data 
+                    // check for property "dataSource" in api response.
+                    // in out case we are directly returning movies.
+                    dataSrc: ""
+                },
+                columns: [
+                    {
+                        data: "name",
+                        render: function(data, type, movie) {
+                            return "<a href='/movies/edit/" + movie.id +"'>" + movie.name + "</a>";
+                        }
+                    },
+                    {
+                        data: "genre.name"
+                    },
+                    {
+                        data: "id",
+                        render: function(data) {
+                            return "<button class='btn-link js-delete' data-customer-id=" + data + ">Delete</button>";
+                        }
+                    }
+                ]
+            });
+
+
+            $("#movies").on("click", ".js-delete", function () {
+                var button = $(this);
+                bootbox.confirm("Are you sure you want to delete the movie?", function (result) {
+                    if (result) {
+                        $.ajax({
+                            url: "/api/movies/" + button.attr("data-customer-id"),
+                            method: "DELETE",
+                            success: function() {
+                                table.row(button.parents("tr")).remove().draw();
+                            }
+                        });
+                    }
+                        
+                });
+            });
+        });
+    </script>
+}
